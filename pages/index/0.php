@@ -29,51 +29,50 @@
 
 <div class="newsbox">
 <?
-	printf("<p id='lnews'>%s</p>\n\n",_('Latest News'));
+    printf("<p id='lnews'>%s</p>\n\n",_('Latest News'));
 
-	$xml = "/www/pages/index/feed.rss"; // FIXME: use relative path to allow operation with different document root
-	$dom = new DOMDocument();
-	$dom->preserveWhiteSpace = false;
-	$dom->Load($xml);
+    $xml = "/www/pages/index/feed.rss"; // FIXME: use relative path to allow operation with different document root
+    $dom = new DOMDocument();
+    $dom->preserveWhiteSpace = false;
+    $dom->Load($xml);
 
-	$xpath = new DOMXPath($dom);    //Create an XPath query
+    $xpath = new DOMXPath($dom);    //Create an XPath query
 
-	$query = "//channel/item";
-	$items = $xpath->query($query);
+    $query = "//channel/item";
+    $items = $xpath->query($query);
 
-	$count = 0;
-	foreach($items as $id => $item) {
-		$query = "./title";
-		$nodeList = $xpath->query($query, $item);
-		$title = recode_string("UTF8..html" , $nodeList->item(0)->nodeValue);
+    $count = 0;
+    foreach($items as $id => $item) {
+        $query = "./title";
+        $nodeList = $xpath->query($query, $item);
+        $title = recode_string("UTF8..html" , $nodeList->item(0)->nodeValue);
 
-		$query = "./link";
-		$nodeList = $xpath->query($query, $item);
-		$link = htmlspecialchars($nodeList->item(0)->nodeValue);
+        $query = "./link";
+        $nodeList = $xpath->query($query, $item);
+        $link = htmlspecialchars($nodeList->item(0)->nodeValue);
 
-		$query = "./description";
-		$nodeList = $xpath->query($query, $item);
-		$description = $nodeList->item(0)->nodeValue;
-		// The description may contain HTML entities => convert them
-		$description = html_entity_decode($description, ENT_COMPAT | ENT_HTML401, 'UTF-8');
-		// Description may contain HTML markup and unicode characters => encode them
-		// If we didn't decode and then encode again, (i.e. take the content
-		// as it is in the RSS feed) we might inject harmful markup
-		$description = recode_string("UTF8..html", $description);
+        $query = "./description";
+        $nodeList = $xpath->query($query, $item);
+        $description = $nodeList->item(0)->nodeValue;
+        // The description may contain HTML entities => convert them
+        $description = html_entity_decode($description, ENT_COMPAT | ENT_HTML401, 'UTF-8');
+        // Description may contain HTML markup and unicode characters => encode them
+        // If we didn't decode and then encode again, (i.e. take the content
+        // as it is in the RSS feed) we might inject harmful markup
+        $description = recode_string("UTF8..html", $description);
 
-		printf("<h3> %s </h3>\n", $title);
+		printf("<h3><a href=\"%s\"> %s </a></h3>\n",$link, $title);
 		printf("<p> %s </p>\n", $description);
-		printf("<p>[<a href=\"%s\"> %s </a> ] </p>\n\n", $link,_("Full Story"));
 
-		$title = '';
-		$description = '';
-		$link = '';
+        $title = '';
+        $description = '';
+        $link = '';
 
-		$count++;
-		if ($count >= 3) {
-			break;
-		}
-	}
+        $count++;
+        if ($count >= 3) {
+            break;
+        }
+    }
 ?>
 
 [ <a href="http://blog.CAcert.org/"><?=_('More News Items')?></a> ]
